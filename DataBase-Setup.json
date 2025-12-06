@@ -1,0 +1,515 @@
+{
+  "name": "DataBase-Setup",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "08d68a47-05bd-4f71-a403-b1d936f35a80",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- 1) Create schema (change the name if you prefer)\nCREATE SCHEMA IF NOT EXISTS roadsure_final;\n\n-- 2) Enable ONE of the UUID generators (pick ONE and keep it uncommented)\n\n-- Option A (preferred): pgcrypto => gen_random_uuid()\nCREATE EXTENSION IF NOT EXISTS pgcrypto;\n\n-- Option B (alternative): uuid-ossp => uuid_generate_v4()\n-- CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\n\n-- 3) Create the session logger table\n-- Note: \"from\" and \"type\" are SQL keywords. To avoid quoting everywhere,\n-- I’m using safer names: sender and msg_type. (If you insist on the exact\n-- names, I can provide a quoted-identifier version.)\nCREATE TABLE IF NOT EXISTS roadsure_final.session_logger_table (\n  log_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- or uuid_generate_v4()\n  session_id   TEXT        NOT NULL,\n  chat_input   TEXT        NOT NULL,\n  sender       TEXT        NOT NULL,  -- was \"from\"\n  msg_type     TEXT        NOT NULL,  -- was \"type\"\n  occurred_at  TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- 4) Helpful index for faster lookups by session\nCREATE INDEX IF NOT EXISTS idx_session_logger_session\n  ON roadsure_final.session_logger_table (session_id);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        192
+      ],
+      "id": "28e23ee8-b4b2-49d3-9c39-8f8f9364ec48",
+      "name": "session_logger_table",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO roadsure_final.session_logger_table\n  (session_id, chat_input, sender, msg_type)\nVALUES\n  ('smoke-001', 'hello from smoke test', 'user', 'text')\nRETURNING\n  log_id, session_id, chat_input, sender AS \"from\", msg_type AS \"type\", occurred_at;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        352
+      ],
+      "id": "b128cbc3-eddd-4acd-8b5a-9e661ea1103f",
+      "name": "Smoke test for session table",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Create mini_cust_info table\nCREATE TABLE IF NOT EXISTS roadsure_final.mini_cust_info (\n  cust_name  TEXT NOT NULL,\n  cust_email TEXT,\n  cust_phone TEXT,\n  session_id TEXT NOT NULL\n);\n\n-- Helpful index for lookups by session_id\nCREATE INDEX IF NOT EXISTS idx_mini_cust_info_session\n  ON roadsure_final.mini_cust_info (session_id);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        192
+      ],
+      "id": "ee5b6921-6b57-4c25-870c-ca50a0d9ca36",
+      "name": "mini_cust_info",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Ensure UUID generator is available (safe to re-run)\nCREATE EXTENSION IF NOT EXISTS pgcrypto;\n\n-- Add UUID column with default\nALTER TABLE roadsure_final.mini_cust_info\n  ADD COLUMN cust_id UUID DEFAULT gen_random_uuid();\n\n-- Make it NOT NULL and primary key\nALTER TABLE roadsure_final.mini_cust_info\n  ALTER COLUMN cust_id SET NOT NULL;\n\nALTER TABLE roadsure_final.mini_cust_info\n  ADD CONSTRAINT mini_cust_info_pkey PRIMARY KEY (cust_id);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        352
+      ],
+      "id": "c8c24204-0ecd-4bc1-af4b-6559fc2e2696",
+      "name": "mini_cust_info1",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH ins AS (\n  INSERT INTO roadsure_final.mini_cust_info\n    (cust_name, cust_email, cust_phone, session_id)\n  VALUES\n    ('Alex Smith', 'alex@example.com', '+1 555 0100', 'smoke-001')\n  RETURNING cust_id, cust_name, cust_email, cust_phone, session_id\n)\nSELECT * FROM ins;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        528
+      ],
+      "id": "f4bd49a4-2ee3-448a-8b43-96975163de95",
+      "name": "smoke test for mini_cust",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Ensure UUID generator is available (safe to re-run)\nCREATE EXTENSION IF NOT EXISTS pgcrypto;\n\n-- Create the full customer info table\nCREATE TABLE IF NOT EXISTS roadsure_final.cust_info_full (\n  -- UUID primary key\n  record_id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n\n  -- Shared fields (same convention as mini_cust_info)\n  cust_name           TEXT        NOT NULL,\n  cust_email          TEXT,\n  cust_phone          TEXT,\n  session_id          TEXT        NOT NULL,\n\n  -- Additional fields\n  date_of_birth       DATE,\n  vin                 TEXT,\n  license_issue_year  INTEGER,\n  desired_deductible  INTEGER,\n  incidents           INTEGER,\n  annual_mileage      INTEGER,\n\n  created_at          TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- Helpful indexes\nCREATE INDEX IF NOT EXISTS idx_cust_info_full_session\n  ON roadsure_final.cust_info_full (session_id);\n\nCREATE INDEX IF NOT EXISTS idx_cust_info_full_vin\n  ON roadsure_final.cust_info_full (vin);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        496,
+        192
+      ],
+      "id": "b183195a-094e-48b9-8190-f20bea2e97d1",
+      "name": "cust_info_full",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Smoke test: insert one full record and return it\nWITH ins AS (\n  INSERT INTO roadsure_final.cust_info_full (\n    cust_name, cust_email, cust_phone, session_id,\n    date_of_birth, vin, license_issue_year, desired_deductible,\n    incidents, annual_mileage\n  )\n  VALUES (\n    'Alex Smith', 'alex@example.com', '+1 555 0100', 'smoke-001',\n    '1994-07-12', '1HGCM82633A004352', 2016, 500,\n    1, 12000\n  )\n  RETURNING\n    record_id, cust_name, cust_email, cust_phone, session_id,\n    date_of_birth, vin, license_issue_year, desired_deductible,\n    incidents, annual_mileage, created_at\n)\nSELECT * FROM ins;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        512,
+        368
+      ],
+      "id": "0aa46723-48b2-464d-a727-ab738a187f79",
+      "name": "cust_info_full_smoke",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Create the registry table to store {column: type} per table\nCREATE EXTENSION IF NOT EXISTS pgcrypto;\n\nCREATE TABLE IF NOT EXISTS roadsure_final.total_schema_table (\n  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  schema_name TEXT NOT NULL,\n  table_name  TEXT NOT NULL,\n  columns     JSONB NOT NULL,   -- e.g., { \"cust_name\": \"text\", \"session_id\": \"text\" }\n  captured_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  CONSTRAINT uq_total_schema UNIQUE (schema_name, table_name)\n);\n\nCREATE INDEX IF NOT EXISTS idx_total_schema_tbl\n  ON roadsure_final.total_schema_table (schema_name, table_name);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        768,
+        192
+      ],
+      "id": "a36a1119-dd10-4155-a261-37bbe4b900b0",
+      "name": "total_schema_table",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Upsert schema snapshots for our three existing tables into roadsure_final.total_schema_table\nWITH per_table AS (\n  SELECT\n    c.table_schema AS schema_name,\n    c.table_name   AS table_name,\n    jsonb_object_agg(c.column_name, to_jsonb(c.data_type)) AS columns\n  FROM information_schema.columns c\n  WHERE c.table_schema = 'roadsure_final'\n    AND c.table_name IN (\n      'session_logger_table',\n      'mini_cust_info',\n      'cust_info_full'\n    )\n  GROUP BY c.table_schema, c.table_name\n)\nINSERT INTO roadsure_final.total_schema_table (schema_name, table_name, columns)\nSELECT schema_name, table_name, columns\nFROM per_table\nON CONFLICT (schema_name, table_name)\nDO UPDATE SET\n  columns     = EXCLUDED.columns,\n  captured_at = now();\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        768,
+        368
+      ],
+      "id": "eefebb28-ab2f-457d-a0a9-25f531e61bbd",
+      "name": "total_schema_table_insert",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Smoke test: verify rows exist and inspect column map\nSELECT\n  schema_name,\n  table_name,\n  jsonb_pretty(columns) AS columns,\n  captured_at\nFROM roadsure_final.total_schema_table\nWHERE schema_name = 'roadsure_final'\n  AND table_name IN ('session_logger_table','mini_cust_info','cust_info_full')\nORDER BY table_name;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        768,
+        576
+      ],
+      "id": "cf11d057-20c8-4712-b315-458261ebdbc7",
+      "name": "total_schema_smoke",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Ensure UUID generator is available (safe to re-run)\nCREATE EXTENSION IF NOT EXISTS pgcrypto;\n\n-- Create quote_register table\nCREATE TABLE IF NOT EXISTS roadsure_final.quote_register (\n  quote_id   UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- UUID\n  cust_name  TEXT NOT NULL,\n  cust_email TEXT,\n  cust_phone TEXT,\n  session_id TEXT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- Helpful index for lookups by session\nCREATE INDEX IF NOT EXISTS idx_quote_register_session\n  ON roadsure_final.quote_register (session_id);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1056,
+        208
+      ],
+      "id": "54d150a5-f75a-4db5-a593-c6a060e10873",
+      "name": "quote_register",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH ins_default AS (\n  INSERT INTO roadsure_final.quote_register (\n    cust_name, cust_email, cust_phone, session_id\n  )\n  VALUES ('User A', 'a@example.com', '+1 555 0101', 'smoke-quote-004')\n  RETURNING quote_id, cust_name, session_id, quote_selected, created_at\n),\nins_custom AS (\n  INSERT INTO roadsure_final.quote_register (\n    cust_name, cust_email, cust_phone, session_id, quote_selected\n  )\n  VALUES ('User B', 'b@example.com', '+1 555 0102', 'smoke-quote-005', 'Gold')\n  RETURNING quote_id, cust_name, session_id, quote_selected, created_at\n)\nSELECT * FROM ins_default\nUNION ALL\nSELECT * FROM ins_custom;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1072,
+        576
+      ],
+      "id": "1b67cfb1-b118-4c44-a31c-86662150b275",
+      "name": "quote_register_smoke",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Migrate quote_selected from boolean -> text and enforce a sensible default\n\n-- 1) Drop current default to allow type change\nALTER TABLE roadsure_final.quote_register\n  ALTER COLUMN quote_selected DROP DEFAULT;\n\n-- 2) Change type to TEXT, preserving existing TRUE/FALSE as 'true'/'false'\nALTER TABLE roadsure_final.quote_register\n  ALTER COLUMN quote_selected TYPE TEXT\n  USING (\n    CASE\n      WHEN quote_selected IS TRUE  THEN 'true'\n      WHEN quote_selected IS FALSE THEN 'false'\n      ELSE COALESCE(quote_selected::text, '')\n    END\n  );\n\n-- 3) Normalize empties to 'none'\nUPDATE roadsure_final.quote_register\nSET quote_selected = COALESCE(NULLIF(quote_selected, ''), 'none')\nWHERE quote_selected IS NULL OR quote_selected = '';\n\n-- 4) Set NOT NULL + default 'none' going forward\nALTER TABLE roadsure_final.quote_register\n  ALTER COLUMN quote_selected SET NOT NULL,\n  ALTER COLUMN quote_selected SET DEFAULT 'none';\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1072,
+        400
+      ],
+      "id": "a0dfb36c-ab83-46a9-af6a-f4081537b866",
+      "name": "quote_register_Alter",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM roadsure_final.quote_register\nORDER BY created_at DESC;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1072,
+        768
+      ],
+      "id": "e40fcf7d-b636-4e25-911c-8d7e96f86dec",
+      "name": "quote_register_full",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Make sure uuid generation is available (safe to run multiple times)\nCREATE EXTENSION IF NOT EXISTS pgcrypto;\n\n-- Per-turn interaction log: who said what, in which session, by which agent\nCREATE TABLE IF NOT EXISTS roadsure_final.interaction_log (\n  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  session_id       TEXT,\n  turn_index       INTEGER,              -- 0,1,2,... if you choose to track it later\n  actor            TEXT,                 -- 'user', 'initial_agent', 'fallback_agent', 'quote_agent'\n  agent_phase      TEXT,                 -- 'fast', 'fallback', 'quote_flow', 'human_escalation', etc.\n  message          TEXT,                 -- what was actually said (user or agent answer)\n  category         TEXT,                 -- Fast / Quote / Human / All (for agent turns; NULL for user)\n  confidence       NUMERIC,              -- agent confidence (NULL for user)\n  needs_escalation BOOLEAN,              -- true/false for agent turns (NULL for user)\n  created_at       TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- Helpful index for per-session analysis\nCREATE INDEX IF NOT EXISTS idx_interaction_log_session\n  ON roadsure_final.interaction_log (session_id);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1392,
+        224
+      ],
+      "id": "406858b3-7efb-433e-a2cf-4861edb09526",
+      "name": "interaction_log table",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT column_name, data_type\nFROM information_schema.columns\nWHERE table_schema = 'roadsure_final'\n  AND table_name   = 'interaction_log'\nORDER BY ordinal_position;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1392,
+        416
+      ],
+      "id": "f08e861b-afcc-467e-8225-0df4632f2c05",
+      "name": "smoke_test_interaction_log",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO roadsure_final.interaction_log (\n    session_id,\n    turn_index,\n    actor,\n    agent_phase,\n    message,\n    category,\n    confidence,\n    needs_escalation\n)\nVALUES (\n    'test-session-001',\n    1,\n    'user',\n    'Initial-Agent',\n    'This is a test log row from n8n.',\n    'Fast',\n    0.95,\n    false\n)\nRETURNING id, session_id, turn_index, actor, agent_phase, message, category,\n          confidence, needs_escalation, created_at;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1392,
+        624
+      ],
+      "id": "fd03334a-790e-458f-b98f-ef6ad220857b",
+      "name": "smoke_test_interaction_log1",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * \nFROM roadsure_final.interaction_log\nORDER BY created_at DESC\nLIMIT 5;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1392,
+        832
+      ],
+      "id": "e6172ebe-03eb-4fc5-babf-36098ba3d0a3",
+      "name": "smoke_test_interaction_log2",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Upload your data to test RAG",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload your file(s)",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf, .csv",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        1744,
+        240
+      ],
+      "id": "3639725d-3741-4b61-9d14-adfb9a0ba5fd",
+      "name": "Upload your file here",
+      "webhookId": "82848bc4-5ea2-4e5a-8bb6-3c09b94a8c5d"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "n8n_vectors_new_2",
+        "embeddingBatchSize": 250,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        1984,
+        224
+      ],
+      "id": "d2c9fca7-97e3-4462-bfeb-2ea5f97bd52a",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2160,
+        432
+      ],
+      "id": "a36af503-7b4b-4188-8ea8-b1857a7abf6f",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1904,
+        448
+      ],
+      "id": "fc441f26-62bf-4e28-bd67-59292ccdb290",
+      "name": "Embeddings OpenAI1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Upload your file here": {
+      "main": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "234b7a33-44c3-4b11-b031-fd85f0568d03",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bcca7a19c58a6a3cbdffbdd2256521da1bb84df67b7e2f261953d8cdf7fdd207"
+  },
+  "id": "3MVVT7zbjylwlOpz",
+  "tags": []
+}

@@ -1,0 +1,1952 @@
+{
+  "name": "Main",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1712,
+        200
+      ],
+      "id": "7d2e4ae1-ce3c-49f3-b1e3-3a1c3ccf789b",
+      "name": "Main",
+      "webhookId": "981548ae-05cb-48d3-86b0-145562e6f096"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d23468a0-0ac1-4c13-bb4b-864ebc8e7e03",
+              "name": "chatInput",
+              "value": "={{$json.chatInput}}",
+              "type": "string"
+            },
+            {
+              "id": "a1c016a1-4cd2-482b-8a99-44521b7f22b9",
+              "name": "session_id",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "405561f3-87e3-42cd-a692-e6e49e2be29a",
+              "name": "execution_id",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "fe3aecd8-4469-4ad1-8481-d96a163cab5b",
+              "name": "resume_url",
+              "value": "={{ $execution.resumeUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "45c0c8b6-9314-422f-a2fb-142b2efe7b39",
+              "name": "workflow_id",
+              "value": "={{ $workflow.id }}",
+              "type": "string"
+            },
+            {
+              "id": "54c84c4a-5eff-4780-bf42-1e543fb41335",
+              "name": "time_stamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1488,
+        200
+      ],
+      "id": "2bd91689-d83e-4022-a263-43c106aca622",
+      "name": "Normalize-1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "maxTokens": 300,
+          "temperature": 0.3,
+          "maxRetries": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1264,
+        624
+      ],
+      "id": "7a3093c3-e5f9-4540-91ac-fcd6168e22cc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "mamkpJPmorU48GF5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "={{ $json.answer }}",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        160,
+        496
+      ],
+      "id": "f2e87c8b-9887-434b-8c22-bbd86d266e3c",
+      "name": "Respond to Chat"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "Human",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ca633f61-edf8-487b-945e-8ce59287f29a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5daba47d-3aa9-4308-9b6c-f58b41fd68ae",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "Quote",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "038e980e-6d42-462c-aee9-2c4a08ce6b10",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "36663f0e-a78c-407b-a3f1-3020f9ed150d",
+                    "leftValue": "={{ $json.chatInput }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        160,
+        688
+      ],
+      "id": "571fa23c-6492-481b-811e-83ee99cb5a3e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a66f68c3-b0f4-423d-968d-0d0a82b704e3",
+              "name": "answer",
+              "value": "={{ (() => {\n  const raw = $json.output;\n  let obj = {};\n\n  try {\n    const parsed = (typeof raw === 'string') ? JSON.parse(raw) : raw;\n    obj = Array.isArray(parsed) ? (parsed[0] || {}) : (parsed || {});\n  } catch (e) {\n    return '';\n  }\n\n  return String(obj.answer ?? '')\n    .replace(/\\s{2,}/g, ' ')\n    .trim();\n})() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "35843c0b-c980-49bc-ac6c-998feac8f9d2",
+              "name": "category",
+              "value": "={{ (() => {\n  const raw = $json.output;\n  let obj = {};\n\n  try {\n    const parsed = (typeof raw === 'string') ? JSON.parse(raw) : raw;\n    obj = Array.isArray(parsed) ? (parsed[0] || {}) : (parsed || {});\n  } catch (e) {}\n\n  const allowed = ['Quote','Human','All','Fast'];\n  const val = String(obj.category ?? 'All').trim();\n  const match = allowed.find(a => a.toLowerCase() === val.toLowerCase());\n  return match || 'All';\n})() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "5fccc870-bb1e-4f9f-8a76-ec874f954cdb",
+              "name": "confidence",
+              "value": "={{ (()=>{\n  const raw = $json.output;\n  const text = typeof raw==='string' ? raw : JSON.stringify(raw);\n  const m = text.match(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);\n  const body = m ? m[1] : text;\n  let o={}; try{\n    let p = JSON.parse(body);\n    o = Array.isArray(p) ? (p[0] ?? {}) : (p ?? {});\n  }catch(e){}\n  const v = o?.confidence;\n  const n = (typeof v === 'string') ? parseFloat(v) : Number(v);\n  if (!Number.isFinite(n)) return '0';\n  // keep as minimal string (e.g., \"0.9\", \"1\", \"0.75\")\n  return String(n).replace(/\\.0+$/,'');\n})() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "48b525b3-4000-4ccd-a031-41b22064c636",
+              "name": "needs_escalation",
+              "value": "={{ (()=>{\n  const raw = $json.output;\n  const text = typeof raw==='string' ? raw : JSON.stringify(raw);\n  const m = text.match(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);\n  const body = m ? m[1] : text;\n  let o={}; try{\n    let p = JSON.parse(body);\n    o = Array.isArray(p) ? (p[0] ?? {}) : (p ?? {});\n  }catch(e){}\n  const v = o?.needs_escalation;\n  const s = (typeof v === 'boolean') ? v : String(v ?? '').trim().toLowerCase();\n  const truthy = ['true','1','yes','y'];\n  return (s === true || truthy.includes(s)) ? 'true' : 'false';\n})() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "f6dce6d4-a483-44bc-9d10-bdab5d0fb58c",
+              "name": "session_id",
+              "value": "={{ $('Normalize-1').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "dbde3384-02e4-4b4c-9722-8b93b7108de8",
+              "name": "chatInput",
+              "value": "={{ $('Normalize-1').item.json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "96353931-3c67-41da-a86c-39f1d0b71d75",
+              "name": "execution_id",
+              "value": "={{ $('Normalize-1').item.json.execution_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -512,
+        400
+      ],
+      "id": "b9de3694-3655-4ed5-bcc0-e0f9cfc387fd",
+      "name": "Normalize-2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6ccf2c3c-9e59-44c3-8e72-8a3061ea8a79",
+              "leftValue": "={{ $json.needs_escalation }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "2aace708-e33e-44e5-b28c-318540c295c8",
+              "leftValue": "={{ $json.category }}",
+              "rightValue": "Fast",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        400
+      ],
+      "id": "2171d718-daf4-4a6d-a57c-344da869a1d1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "formTitle": "User Information for escalation",
+        "formDescription": "Please give your basic information for our Human agent to contact.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "cust_name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "cust_email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "cust_phone"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2128,
+        120
+      ],
+      "id": "9ec1c239-1718-4b02-a24f-847d5c4a43f0",
+      "name": "Wait",
+      "webhookId": "55e11f5f-31ff-4050-af8f-e8e89b667631"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO roadsure_final.mini_cust_info\n  (cust_name, cust_email, cust_phone, session_id)\nVALUES\n  ('{{ $json.cust_name }}', '{{ $json.cust_email }}', '{{ $json.cust_phone }}', '{{ $json.session_id }}')\nRETURNING cust_id, cust_name, cust_email, cust_phone, session_id;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2576,
+        120
+      ],
+      "id": "a54bebc4-cc25-43e6-bbb7-c2f61a4db42a",
+      "name": "Insert Data into Mini_Cust",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "likhithdereddy717@gmail.com",
+        "subject": "Request for a Human Agent",
+        "message": "=<p><strong>Potential customer requested human assistance</strong></p>\n\n<table style=\"border-collapse:collapse;\">\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Name :</strong></td>\n    <td style=\"padding:4px 8px;\">{{ $json.cust_name || 'N/A' }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Email :</strong></td>\n    <td style=\"padding:4px 8px;\">\n      {{ $json.cust_email ? '<a href=\"mailto:' + $json.cust_email + '\">' + $json.cust_email + '</a>' : 'N/A' }}\n    </td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Phone :</strong></td>\n    <td style=\"padding:4px 8px;\">\n      {{ $json.cust_phone ? '<a href=\"tel:' + $json.cust_phone + '\">' + $json.cust_phone + '</a>' : 'N/A' }}\n    </td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Session ID :</strong></td>\n    <td style=\"padding:4px 8px;\">{{ $json.session_id || 'N/A' }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Timestamp :</strong></td>\n    <td style=\"padding:4px 8px;\">{{ new Date().toISOString() }}</td>\n  </tr>\n</table>\n\n<p>Warm regards,<br/>CIRA</p>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2800,
+        120
+      ],
+      "id": "be230ebe-7806-4f6f-abde-b59d7e9e006c",
+      "name": "Escalation To Human",
+      "webhookId": "3bbc6360-0add-42a6-a785-5e2c41cb1385",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0vdIousu3HjqJMHG",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "=Thank you {{ $('Insert Data into Mini_Cust').item.json.cust_name }} your information has been sent to our company and soon a Human agent will contact you via either {{ $('Insert Data into Mini_Cust').item.json.cust_email }} or {{ $('Insert Data into Mini_Cust').item.json.cust_phone }}",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        3024,
+        120
+      ],
+      "id": "cf526d27-1902-4341-92c3-87f14f4e3301",
+      "name": "Respond to Chat1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Quote Generator with snapped deductibles (allowed: 100, 250, 500, 1000)\n\nfunction toInt(v, def = 0) {\n  const n = Number(v);\n  return Number.isFinite(n) ? Math.trunc(n) : def;\n}\nfunction toDate(d) {\n  if (!d) return null;\n  const dt = new Date(d);\n  return isNaN(dt.getTime()) ? null : dt;\n}\nfunction calcAge(dob) {\n  const today = new Date();\n  let age = today.getFullYear() - dob.getFullYear();\n  const m = today.getMonth() - dob.getMonth();\n  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;\n  return Math.max(0, age);\n}\nfunction clamp(x, lo, hi) { return Math.min(hi, Math.max(lo, x)); }\nfunction round2(x) { return Math.round((x + Number.EPSILON) * 100) / 100; }\n\nconst allowed = [100, 250, 500, 1000];\nconst snapUp   = v => allowed.find(x => v <= x) ?? allowed[allowed.length - 1];\nconst snapDown = v => [...allowed].reverse().find(x => v >= x) ?? allowed[0];\n\nconst out = [];\nfor (const item of items) {\n  const j = item.json;\n\n  const dob = toDate(j.date_of_birth);\n  const age = dob ? calcAge(dob) : 40;\n  const licenseYear = toInt(j.license_issue_year, new Date().getFullYear());\n  const yearsLicensed = clamp(new Date().getFullYear() - licenseYear, 0, 80);\n\n  const incidents = toInt(j.incidents, 0);\n  const annualMileage = toInt(j.annual_mileage, 12000);\n  const desiredDeductible = toInt(j.desired_deductible, 500);\n\n  // Factors (numeric + DOB + license year only)\n  const ageF =\n    age < 25 ? 1.5 :\n    age < 35 ? 1.2 :\n    age < 65 ? 1.0 : 1.3;\n\n  const expF =\n    yearsLicensed < 3 ? 1.3 :\n    yearsLicensed < 10 ? 1.1 : 1.0;\n\n  const incF = 1 + 0.25 * incidents;\n  const milF = clamp(1 + ((annualMileage - 12000) / 12000) * 0.2, 0.8, 1.4);\n  const dedF = clamp(1 - ((desiredDeductible - 500) / 1000) * 0.1, 0.8, 1.1);\n\n  const base = 600;\n  const rawAnnual = base * ageF * expF * incF * milF * dedF;\n\n  // Option B: snap deductibles to allowed set\n  const tiers = [\n    // Bronze: bump up to next higher allowed, but at least 500\n    { tier: 'Bronze', tierMult: 0.90, tierDeductible: snapUp(Math.max(desiredDeductible, 500)) },\n    // Silver: nearest allowed at/above desired\n    { tier: 'Silver', tierMult: 1.00, tierDeductible: snapUp(desiredDeductible) },\n    // Gold: nearest allowed at/below desired, floor at 250\n    { tier: 'Gold',   tierMult: 1.15, tierDeductible: snapDown(Math.min(desiredDeductible, 250)) },\n  ];\n\n  for (const t of tiers) {\n    const annualPremium = rawAnnual * t.tierMult;\n    out.push({\n      json: {\n        session_id: j.session_id,\n        cust_name: j.cust_name,\n        cust_email: j.cust_email,\n        cust_phone: j.cust_phone,\n\n        date_of_birth: j.date_of_birth,\n        license_issue_year: licenseYear,\n        incidents,\n        annual_mileage: annualMileage,\n        desired_deductible: desiredDeductible,\n\n        driver_age: age,\n        years_licensed: yearsLicensed,\n        factors: { ageF, expF, incF, milF, dedF },\n\n        tier: t.tier,\n        annual_premium: round2(annualPremium),\n        monthly_premium: round2(annualPremium / 12),\n        quote_deductible: t.tierDeductible,\n      },\n    });\n  }\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        496
+      ],
+      "id": "d2a1ef32-d7e2-4040-943e-7c5a29ca7570",
+      "name": "Quote_Generator"
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "formTitle": "Quote Selection",
+        "formDescription": "From given information These are these are the premiums you are eligible for.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Premiums Quotes",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "={{ `Bronze\\n: Annual Premium: $${Number($json.quotes?.[0]?.annual_premium ?? 0).toFixed(2)}\\n- Monthly Premium: $${Number($json.quotes?.[0]?.monthly_premium ?? 0).toFixed(2)}\\n- Deductible: ${$json.quotes?.[0]?.quote_deductible ?? 'N/A'}` }}\n\n"
+                  },
+                  {
+                    "option": "=Silver :  Annual Premium  :- {{ $json.quotes[0].annual_premium }} Monthly Preimum :- {{ $json.quotes[0].monthly_premium }} Deductibles     :- {{ $json.quotes[0].quote_deductible }}"
+                  },
+                  {
+                    "option": "=Gold :  Annual Premium  :- {{ $json.quotes[0].annual_premium }} Monthly Preimum :- {{ $json.quotes[0].monthly_premium }} Deductibles     :- {{ $json.quotes[0].quote_deductible }}"
+                  }
+                ]
+              },
+              "limitSelection": "exact"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3472,
+        496
+      ],
+      "id": "448a7468-f014-43be-88b5-030496d252b6",
+      "name": "Wait1",
+      "webhookId": "08f67125-d850-4a02-bada-eb9da9cafe64"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Expect 3 incoming items (Bronze, Silver, Gold) from the previous Code node.\n// Output: 1 item containing only premium-related data, ready for a form.\n\nfunction round2(x) {\n  return Math.round((Number(x) + Number.EPSILON) * 100) / 100;\n}\n\n// Collect by tier\nconst tierMap = {};\nfor (const it of items) {\n  const j = it.json || {};\n  const tier = String(j.tier || '').trim();\n  if (!tier) continue;\n  tierMap[tier] = {\n    tier,\n    annual_premium: round2(j.annual_premium),\n    monthly_premium: round2(j.monthly_premium),\n    quote_deductible: Number(j.quote_deductible),\n  };\n}\n\n// Validate presence of all tiers\nconst required = ['Bronze', 'Silver', 'Gold'];\nconst missing = required.filter(t => !tierMap[t]);\nif (missing.length) {\n  throw new Error(\n    `Expected 3 quote items (Bronze, Silver, Gold) but missing: ${missing.join(', ')}. ` +\n    `Tiers seen: ${Object.keys(tierMap).join(', ') || 'none'}. ` +\n    `Check the connection from the previous Code node so all three items reach this node.`\n  );\n}\n\n// Build ordered array\nconst quotes = required.map(t => tierMap[t]);\n\n// Build options for a selection form (dropdown)\nconst selection_options = quotes.map(q => ({\n  label: `${q.tier} — $${q.monthly_premium}/mo (deductible ${q.quote_deductible})`,\n  value: q.tier,\n}));\n\n// Optional summary text for chat/email preview\nconst summary_text = quotes\n  .map(q => `${q.tier}: $${q.monthly_premium}/mo ($${q.annual_premium}/yr), deductible ${q.quote_deductible}`)\n  .join(' | ');\n\n// Return a single consolidated item (premium-only fields)\nreturn [{ json: { quotes, selection_options, summary_text } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        496
+      ],
+      "id": "4c086a3d-1413-4c49-b063-0cfcda3fbb74",
+      "name": "Extract Premiums"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH payload AS (\n  SELECT ($$ {{ JSON.stringify($json) }} $$)::jsonb AS j\n)\nINSERT INTO roadsure_final.cust_info_full (\n  cust_name, cust_email, cust_phone, session_id,\n  date_of_birth, vin, license_issue_year, desired_deductible,\n  incidents, annual_mileage\n)\nSELECT\n  j->>'cust_name',\n  j->>'cust_email',\n  j->>'cust_phone',\n  j->>'session_id',\n  (j->>'date_of_birth')::date,\n  j->>'vin',\n  NULLIF(j->>'license_issue_year','')::int,\n  NULLIF(j->>'desired_deductible','')::int,\n  NULLIF(j->>'incidents','')::int,\n  NULLIF(j->>'annual_mileage','')::int\nFROM payload\nRETURNING\n  record_id, cust_name, cust_email, cust_phone, session_id,\n  date_of_birth, vin, license_issue_year, desired_deductible,\n  incidents, annual_mileage, created_at;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2576,
+        496
+      ],
+      "id": "44bbe7cf-5a35-4fdb-8bf8-dcf6c3fea123",
+      "name": "Insert Data into Full_Cust",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3920,
+        728
+      ],
+      "id": "92553335-3fec-4677-a9e1-a56da7046c50",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Goal: set quote_selected to the full premiums line (unparsed).\n// Handles these shapes:\n// 1) \"Premiums Quotes\": \"<string>\"\n// 2) \"Premiums Quotes\": [\"<string>\", ...]\n// 3) \"Premiums Quotes\": [{label:\"...\", value:\"...\"}, ...]\n// 4) Any key that contains \"premium\" or \"quote\" (case-insensitive) with a suitable string/array value.\n// Never falls back to submittedAt. Ignores session_id.\n\nconst j = items[0]?.json ?? {};\n\nfunction isIsoDateString(s) {\n  // Don't mistakenly pick timestamps\n  return typeof s === 'string' && /^\\d{4}-\\d{2}-\\d{2}T/.test(s);\n}\n\nfunction firstNonEmptyString(arr) {\n  for (const v of arr) {\n    if (typeof v === 'string' && v.trim() && !isIsoDateString(v)) return v.trim();\n    if (v && typeof v === 'object') {\n      // common shapes from form components\n      if (typeof v.label === 'string' && v.label.trim() && !isIsoDateString(v.label)) return v.label.trim();\n      if (typeof v.value === 'string' && v.value.trim() && !isIsoDateString(v.value)) return v.value.trim();\n      // try joining known fields if both exist\n      const combo = [v.tier, v.text, v.name].filter(Boolean).join(' ');\n      if (combo && !isIsoDateString(combo)) return String(combo).trim();\n    }\n  }\n  return '';\n}\n\nfunction pickPremiumLine(obj) {\n  // prefer exact keys first\n  const exactKeys = ['Premiums Quotes[0]', 'Premiums Quotes'];\n  for (const k of exactKeys) {\n    if (k in obj) {\n      const v = obj[k];\n      if (typeof v === 'string' && v.trim() && !isIsoDateString(v)) return v.trim();\n      if (Array.isArray(v)) {\n        const s = firstNonEmptyString(v);\n        if (s) return s;\n      }\n      if (v && typeof v === 'object') {\n        // single object case\n        const cand = firstNonEmptyString([v]);\n        if (cand) return cand;\n      }\n    }\n  }\n\n  // then try fuzzy match on keys containing \"premium\" or \"quote\"\n  for (const [k, v] of Object.entries(obj)) {\n    const lk = k.toLowerCase();\n    if (lk.includes('premium') || lk.includes('quote')) {\n      if (typeof v === 'string' && v.trim() && !isIsoDateString(v)) return v.trim();\n      if (Array.isArray(v)) {\n        const s = firstNonEmptyString(v);\n        if (s) return s;\n      }\n      if (v && typeof v === 'object') {\n        const s = firstNonEmptyString([v]);\n        if (s) return s;\n      }\n    }\n  }\n\n  // last resort: scan any string value that looks like a premium line but is NOT a timestamp\n  for (const v of Object.values(obj)) {\n    if (typeof v === 'string' && v.trim() && !isIsoDateString(v) && /Annual\\s*Pre(?:mi|im)um/i.test(v)) {\n      return v.trim();\n    }\n  }\n\n  return '';\n}\n\nconst line = pickPremiumLine(j);\n\nreturn [\n  {\n    json: {\n      quote_selected: line,                         // may be \"\" if nothing matched\n      submittedAt: typeof j.submittedAt === 'string' ? j.submittedAt : null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3696,
+        496
+      ],
+      "id": "a5f4c251-d6e0-4866-a343-da7128ff66c9",
+      "name": "Extract2"
+    },
+    {
+      "parameters": {
+        "sendTo": "likhithdereddy717@gmail.com",
+        "subject": "Quote Selected By Customer",
+        "message": "={{ `<p><strong>Potential customer requested human assistance</strong></p>\n<table style=\"border-collapse:collapse;\">\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Name :</strong></td>\n    <td style=\"padding:4px 8px;\">${$json.cust_name ?? 'N/A'}</td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Email :</strong></td>\n    <td style=\"padding:4px 8px;\">\n      ${$json.cust_email ? `<a href=\"mailto:${$json.cust_email}\">${$json.cust_email}</a>` : 'N/A'}\n    </td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Phone :</strong></td>\n    <td style=\"padding:4px 8px;\">\n      ${$json.cust_phone ? `<a href=\"tel:${$json.cust_phone}\">${$json.cust_phone}</a>` : 'N/A'}\n    </td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Session ID :</strong></td>\n    <td style=\"padding:4px 8px;\">${$json.session_id ?? 'N/A'}</td>\n  </tr>\n  <tr>\n    <td style=\"padding:4px 8px;\"><strong>Timestamp :</strong></td>\n    <td style=\"padding:4px 8px;\">${$json.created_at ?? new Date().toISOString()}</td>\n  </tr>\n</table>\n\n<p style=\"margin-top:12px;\"><strong>Selected Quote</strong><br/>\n${$json.quote_selected ?? 'N/A'}</p>\n\n<p style=\"margin-top:8px;\"><em>Quote ID:</em> ${$json.quote_id ?? 'N/A'}</p>\n\n<p>Warm regards,<br/>CIRA</p>` }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4592,
+        728
+      ],
+      "id": "9d4f82b4-385d-4e93-92d9-7433c14cad03",
+      "name": "Quote Selection Escalation",
+      "webhookId": "fd2b6023-143a-41dd-b439-8662cd1cbb61",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0vdIousu3HjqJMHG",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH payload AS (\n  SELECT ($$ {{ JSON.stringify($json) }} $$)::jsonb AS j\n)\nINSERT INTO roadsure_final.quote_register (\n  cust_name, cust_email, cust_phone, session_id, quote_selected\n)\nSELECT\n  j->>'cust_name',\n  j->>'cust_email',\n  NULLIF(j->>'cust_phone',''),   -- will be NULL if missing/empty\n  j->>'session_id',\n  j->>'quote_selected'\nFROM payload\nRETURNING\n  quote_id, cust_name, cust_email, cust_phone, session_id, quote_selected, created_at;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4368,
+        728
+      ],
+      "id": "240bedc5-96d5-4477-a2ac-8671b93dced5",
+      "name": "Insert_quotes",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "formTitle": "User Information for escalation",
+        "formDescription": "Please give your basic information for our Human agent to contact.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "cust_name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "cust_email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "cust_phone"
+            },
+            {
+              "fieldLabel": "date_of_birth",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "vin",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "license_issue_year",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "desired_deductible",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "incidents",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "annual_mileage",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2128,
+        728
+      ],
+      "id": "c1ab96ad-404c-4cdc-bcf4-9bd88be503f1",
+      "name": "Wait2",
+      "webhookId": "0b8a2022-fde3-449e-a816-41bb804e58e5"
+    },
+    {
+      "parameters": {
+        "message": "=Thank you for selecting a quote with RoadSure, {{ $('Insert_quotes').item.json.cust_name }}. We’ve received your choice: {{ $('Insert_quotes').item.json.quote_selected.split(\" :\").first() }}. A human agent will contact you soon via {{ $('Insert_quotes').item.json.cust_email }} or {{ $('Insert_quotes').item.json.cust_phone }}.",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        4816,
+        728
+      ],
+      "id": "454d47f5-0281-4905-b6e8-68a2a429ccb2",
+      "name": "Respond to Chat2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {
+          "maxRetries": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        696
+      ],
+      "id": "098fd5b0-b8db-40fc-ab74-17ec4a41afe7",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "mamkpJPmorU48GF5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "={{$json.answer}}",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        424
+      ],
+      "id": "da8916c9-1ef1-444f-af1d-13cc25614a64",
+      "name": "Respond to Chat3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "efb9dee0-d059-4bb5-8219-73b741a94343",
+              "name": "cust_name",
+              "value": "={{ $json.cust_name }}",
+              "type": "string"
+            },
+            {
+              "id": "701e8e9d-02be-4b5b-968f-8cca1e4d04fa",
+              "name": "cust_email",
+              "value": "={{ $json.cust_email }}",
+              "type": "string"
+            },
+            {
+              "id": "1fb2da63-a3e0-4031-9709-75805ac8a4da",
+              "name": "vin",
+              "value": "={{ $json.vin }}",
+              "type": "string"
+            },
+            {
+              "id": "c38e3e32-e5ea-4937-b67b-fbd5f74a0504",
+              "name": "annual_mileage",
+              "value": "={{ $json.annual_mileage }}",
+              "type": "string"
+            },
+            {
+              "id": "653beb06-a4ab-469a-bd5c-143916c91f6e",
+              "name": "quote_selected",
+              "value": "={{ $json.quote_selected }}",
+              "type": "string"
+            },
+            {
+              "id": "d0b6ca93-f328-4d3d-9658-a2f29f137351",
+              "name": "session_id",
+              "value": "={{ $json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "b58d68b8-5e88-40ae-8d76-0e785e3b7962",
+              "name": "date_of_birth",
+              "value": "={{ $json.date_of_birth }}",
+              "type": "string"
+            },
+            {
+              "id": "fd266759-9c94-4f19-8d74-6a159c168af8",
+              "name": "vin",
+              "value": "={{ $json.vin }}",
+              "type": "string"
+            },
+            {
+              "id": "96642801-944f-4e5c-8a6b-c339ee16111d",
+              "name": "license_issue_year",
+              "value": "={{ $json.license_issue_year }}",
+              "type": "number"
+            },
+            {
+              "id": "664287dd-594a-467c-bbb4-e03cff15164a",
+              "name": "cust_phone",
+              "value": "={{ $json.cust_phone }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4144,
+        728
+      ],
+      "id": "a0d2b26e-01e3-4ac9-be57-1aa51fb1bb95",
+      "name": "Normalize-6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "805b48a3-fa71-424d-b01e-a595526f2430",
+              "name": "cust_name",
+              "value": "={{ $json.cust_name }}",
+              "type": "string"
+            },
+            {
+              "id": "85c3169c-4fb1-4c2a-84fe-48d701e1d07f",
+              "name": "cust_email",
+              "value": "={{ $json.cust_email }}",
+              "type": "string"
+            },
+            {
+              "id": "070c3ff0-c2de-4e05-94ea-090722f2699a",
+              "name": "cust_phone",
+              "value": "={{ $json.cust_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "34a0b23f-4b5c-4fb7-ad12-df4a3bdcbfb3",
+              "name": "session_id",
+              "value": "={{ $('Switch').item.json.session_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        120
+      ],
+      "id": "0e59bb81-c45a-4f34-ac47-4ee072427b68",
+      "name": "Normalize-3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "805b48a3-fa71-424d-b01e-a595526f2430",
+              "name": "cust_name",
+              "value": "={{ $json.cust_name }}",
+              "type": "string"
+            },
+            {
+              "id": "85c3169c-4fb1-4c2a-84fe-48d701e1d07f",
+              "name": "cust_email",
+              "value": "={{ $json.cust_email }}",
+              "type": "string"
+            },
+            {
+              "id": "070c3ff0-c2de-4e05-94ea-090722f2699a",
+              "name": "cust_phone",
+              "value": "={{ $json.cust_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "34a0b23f-4b5c-4fb7-ad12-df4a3bdcbfb3",
+              "name": "session_id",
+              "value": "={{ $('Switch').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "d69b75f7-0e68-4c0d-80c2-4c4e4b8c034d",
+              "name": "date_of_birth",
+              "value": "={{ $json.date_of_birth }}",
+              "type": "string"
+            },
+            {
+              "id": "a7d26227-794d-430e-af01-91239c4a91c3",
+              "name": "vin",
+              "value": "={{ $json.vin }}",
+              "type": "string"
+            },
+            {
+              "id": "1abab3f9-88ef-46b7-af51-e78644d9fa37",
+              "name": "license_issue_year",
+              "value": "={{ $json.license_issue_year }}",
+              "type": "number"
+            },
+            {
+              "id": "c47345e6-5878-484c-b1ba-fd8a2d63d6b3",
+              "name": "desired_deductible",
+              "value": "={{ $json.desired_deductible }}",
+              "type": "number"
+            },
+            {
+              "id": "9a645f24-b314-4dd9-9c57-c3a0e5f02008",
+              "name": "incidents",
+              "value": "={{ $json.incidents }}",
+              "type": "number"
+            },
+            {
+              "id": "ec423c52-30b9-40ce-a23c-9c259c28401b",
+              "name": "annual_mileage",
+              "value": "={{ $json.annual_mileage }}",
+              "type": "number"
+            },
+            {
+              "id": "c142dbf0-1c39-46ba-a97b-681a827d38a0",
+              "name": "submittedAt",
+              "value": "={{ $json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        728
+      ],
+      "id": "5c62a49a-fa6f-4669-a93a-022f0b262380",
+      "name": "Normalize-4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dbe0901f-ed30-485b-ba0c-775c2938b749",
+              "name": "quotes[0]",
+              "value": "={{ $json.quotes[0] }}",
+              "type": "object"
+            },
+            {
+              "id": "04f1c84c-32f6-4bf3-b71f-e2cb231d7933",
+              "name": "quotes[1]",
+              "value": "={{ $json.quotes[1] }}",
+              "type": "object"
+            },
+            {
+              "id": "8374fd8d-8130-4d0b-b7ca-3a8ac259a01b",
+              "name": "quotes[2]",
+              "value": "={{ $json.quotes[2] }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3248,
+        496
+      ],
+      "id": "6be93ac3-c9c4-4b44-adff-71fea9037c3e",
+      "name": "Normalize-5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a66f68c3-b0f4-423d-968d-0d0a82b704e3",
+              "name": "answer",
+              "value": "={{ String((typeof $json.output==='string'?JSON.parse($json.output):$json.output)?.answer??'').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "35843c0b-c980-49bc-ac6c-998feac8f9d2",
+              "name": "category",
+              "value": "={{ ((c=>(['Quote','Human','All','Fast'].find(a=>a.toLowerCase()===c.toLowerCase())||'All'))(String((typeof $json.output==='string'?JSON.parse($json.output):$json.output)?.category??'All').trim())) }}",
+              "type": "string"
+            },
+            {
+              "id": "5fccc870-bb1e-4f9f-8a76-ec874f954cdb",
+              "name": "confidence",
+              "value": "={{ ((n=>Number.isFinite(n)?String(n):'0'))(Number((typeof $json.output==='string'?JSON.parse($json.output):$json.output)?.confidence)) }}",
+              "type": "string"
+            },
+            {
+              "id": "48b525b3-4000-4ccd-a031-41b22064c636",
+              "name": "needs_escalation",
+              "value": "={{ ((s=>['true','1','yes','y'].includes(s)?'true':'false'))(String((v=>typeof v==='boolean'?v:String(v??'').trim().toLowerCase())((typeof $json.output==='string'?JSON.parse($json.output):$json.output)?.needs_escalation)).trim().toLowerCase()) }}",
+              "type": "string"
+            },
+            {
+              "id": "f6dce6d4-a483-44bc-9d10-bdab5d0fb58c",
+              "name": "session_id",
+              "value": "={{ $('Normalize-1').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "dbde3384-02e4-4b4c-9722-8b93b7108de8",
+              "name": "chatInput",
+              "value": "={{ $('Normalize-1').item.json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "96353931-3c67-41da-a86c-39f1d0b71d75",
+              "name": "execution_id",
+              "value": "={{ $('Normalize-1').item.json.execution_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1456,
+        472
+      ],
+      "id": "d9bafe74-e3c0-4219-a799-233190f4270e",
+      "name": "Normalize-7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6ccf2c3c-9e59-44c3-8e72-8a3061ea8a79",
+              "leftValue": "={{ $json.needs_escalation }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "2aace708-e33e-44e5-b28c-318540c295c8",
+              "leftValue": "={{ $json.category }}",
+              "rightValue": "Fast",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        472
+      ],
+      "id": "6bcf95ea-19ea-4476-a64d-7e81e1ace0f2",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "Human",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ca633f61-edf8-487b-945e-8ce59287f29a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5daba47d-3aa9-4308-9b6c-f58b41fd68ae",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "Quote",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "36663f0e-a78c-407b-a3f1-3020f9ed150d",
+                    "leftValue": "=",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1904,
+        616
+      ],
+      "id": "08b85684-5163-4213-9871-19ce7a4cec05",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "message": "I don’t have enough info to answer that at the moment. Can I assist you with anything else?",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        920
+      ],
+      "id": "a5001ab4-55ae-4323-8874-73bf6aee9c96",
+      "name": "Respond to Chat4"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "pgvector tool — purpose\nLets the agent retrieve the most relevant knowledge from RoadSure’s document store (in Postgres) using vector similarity. It turns the user’s question into an embedding, finds the top-k matching chunks (e.g., policy wording, endorsements, FAQs), and returns them as grounding context for the answer, plus IDs for citations.\n\nWhen to use it\n\nAnswering policy/coverage/claims questions that must be grounded in RoadSure docs or curated auto-insurance material.\n\nBefore every final answer: run retrieval → if good matches (above similarity threshold), cite them; if not, say “I don’t know based on our documentation.”\n\nWhen disambiguation is needed: re-run after adding a state, vehicle, or coverage detail.\n\nNot for small talk, math, or tasks that don’t require company knowledge.\n\nGood defaults\n\ntop_k: 5–8, cosine similarity; threshold ~0.70 (tighten if you see drift).\n\nFilter by metadata (e.g., company_key IN ('RoadSure','general_auto_insurance') and domain='auto_insurance').\n\nAlways return doc_id#chunk_id so the agent can cite sources",
+        "tableName": "n8n_vectors_new",
+        "topK": 3,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        -1008,
+        624
+      ],
+      "id": "91094d99-7510-4f3b-891c-a31529355600",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        832
+      ],
+      "id": "a71f47a3-cdbe-435f-9baa-50f3170ad7ce",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "mamkpJPmorU48GF5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "pgvector tool — purpose\nLets the agent retrieve the most relevant knowledge from RoadSure’s document store (in Postgres) using vector similarity. It turns the user’s question into an embedding, finds the top-k matching chunks (e.g., policy wording, endorsements, FAQs), and returns them as grounding context for the answer, plus IDs for citations.\n\nWhen to use it\n\nAnswering policy/coverage/claims questions that must be grounded in RoadSure docs or curated auto-insurance material.\n\nBefore every final answer: run retrieval → if good matches (above similarity threshold), cite them; if not, say “I don’t know based on our documentation.”\n\nWhen disambiguation is needed: re-run after adding a state, vehicle, or coverage detail.\n\nNot for small talk, math, or tasks that don’t require company knowledge.\n\nGood defaults\n\ntop_k: 5–8, cosine similarity; threshold ~0.70 (tighten if you see drift).\n\nFilter by metadata (e.g., company_key IN ('RoadSure','general_auto_insurance') and domain='auto_insurance').\n\nAlways return doc_id#chunk_id so the agent can cite sources",
+        "tableName": "n8n_vectors_new",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        1088,
+        696
+      ],
+      "id": "2549f3f3-ce07-498f-a8ec-8ee09dcf54d4",
+      "name": "Postgres PGVector Store1",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        904
+      ],
+      "id": "e28d9f9f-97f2-40b5-84a4-2174e8a36b77",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "mamkpJPmorU48GF5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "Please wait a moment as this might take time.",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        608,
+        1040
+      ],
+      "id": "855904a7-e2ee-4140-be52-70bc4f5bf37c",
+      "name": "Respond to Chat5"
+    },
+    {
+      "parameters": {
+        "message": "Please wait a moment as this might take time.",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        384,
+        472
+      ],
+      "id": "3d2c0035-33c1-46d7-9c96-b7dd74cc07c1",
+      "name": "Respond to Chat6"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 7
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1136,
+        624
+      ],
+      "id": "988c2f3e-954f-4940-87fc-6133e9f26da9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * n8n Function node\n * Input: items with fields like in \"Normalize-2\"\n * Output: cleaned + normalized fields\n */\nreturn items.map(item => {\n  const j = item.json ?? {};\n\n  // ---- helpers ----\n  const cleanText = (val) => String(val ?? '')\n    // real line breaks (CR, LF), Unicode LS/PS, NEL\n    .replace(/[\\u000a\\u000d\\u0085\\u2028\\u2029]+/g, ' ')\n    // any number of backslashes before n/t/r/f/v -> space (handles \\n, \\\\n, \\\\\\n, \\t, etc.)\n    .replace(/\\\\+[ntrfv]/gi, ' ')\n    // redundant: catch stray sequences\n    .replace(/\\\\r|\\\\t|\\\\f|\\\\v/gi, ' ')\n    // collapse spaces\n    .replace(/\\s{2,}/g, ' ')\n    .trim();\n\n  const toNumberString = (val, fallback = '0') => {\n    // handles \"1\\n\", \"0.9\", 0.75, etc.\n    const n = (typeof val === 'string') ? parseFloat(val) : Number(val);\n    if (!Number.isFinite(n)) return fallback;\n    // keep minimal string (e.g., \"0.9\", \"1\", \"0.75\")\n    return String(n).replace(/\\.0+$/,'');\n  };\n\n  const toBooleanString = (val) => {\n    if (typeof val === 'boolean') return val ? 'true' : 'false';\n    const s = cleanText(val).toLowerCase();\n    return (['true','1','yes','y'].includes(s)) ? 'true' : 'false';\n  };\n\n  // ---- normalized outputs ----\n  const normalized = {\n    // cleaned free-text\n    answer: cleanText(j.answer),\n    category: cleanText(j.category),\n\n    // coerced primitives -> string forms you’ve been using downstream\n    confidence: toNumberString(j.confidence, '0'),\n    needs_escalation: toBooleanString(j.needs_escalation),\n\n    // pass-throughs untouched\n    session_id: j.session_id,\n    chatInput: j.chatInput,\n    execution_id: j.execution_id,\n\n    // (optional) keep originals for debugging/comparison\n    _raw: {\n      answer: j.answer,\n      category: j.category,\n      confidence: j.confidence,\n      needs_escalation: j.needs_escalation,\n    }\n  };\n\n  return { json: normalized };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        400
+      ],
+      "id": "f434a301-87c5-4497-b326-fd7bc9033d51",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        696
+      ],
+      "id": "1b632d84-1a4d-4f24-ac2c-66270c77aa3a",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c44fc009-f7ad-4cdc-a6e0-419dbccd0a82",
+              "name": "chatInput",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "0e05f9a8-6389-42f8-bb11-7a87bfac2899",
+              "name": "session_id",
+              "value": "={{ $json.session_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        472
+      ],
+      "id": "ca147216-4c43-407d-966d-1aca25938184",
+      "name": "Normalize"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "ROLE & SCOPE\nYou are CIRA, RoadSure’s AI assistant. Always state or imply you are an AI assistant. Your domain is auto insurance and RoadSure information only. Use only RoadSure-approved knowledge (retrieved context / KB / structured inputs). No hallucinations. If required info isn’t present, don’t guess—escalate.\n\nLATENCY & STYLE\n- Target end-to-end under 3 seconds.\n- Reply in 1–2 sentences or up to 3 short bullets; humble, empathetic, concise.\n- Output JSON only (no code fences, no extra text outside the JSON).\n\nTOOLS YOU CAN CALL\nYou have access to these tools:\n\n1) Tool \"Postgres PGVector Store\"\n   - Use this when you need to look up RoadSure information in the vector knowledge base.\n   - It is relatively slow and may take more than 3 seconds.\n\n2) Tool \"Sla\"\n   - This sends an immediate acknowledgement message to the user while tools are running.\n   - It is NOT the final answer, just a short “please wait” style update.\n   - Its single parameter is the message string you want to show to the user.\n\nTOOL RULES (VERY IMPORTANT)\n- If you decide to call \"Postgres PGVector Store\" for this user turn, you MUST:\n  - First call tool \"Sla\" exactly once with a short acknowledgement message, such as:\n    \"I’m looking that up in our knowledge base, one moment while I fetch the details.\"\n  - After \"Sla\" finishes, call \"Postgres PGVector Store\" to actually retrieve information.\n- Do NOT call \"Sla\" when you can answer directly without using \"Postgres PGVector Store\".\n- Do NOT call \"Sla\" more than once per user turn.\n- After any tool calls, you must still produce a final JSON answer in the schema below.\n\nOUTPUT CONTRACT (JSON only; no code fences, no extra prose)\n\n{\n  \"answer\": \"string\",\n  \"category\": \"Quote|Human|All|Fast\",\n  \"confidence\": 0.0,\n  \"needs_escalation\": true\n}\n\n- answer: the text that should be shown to the user (final answer, NOT the Sla message).\n- category: one of \"Quote\", \"Human\", \"All\", or \"Fast\" (see definitions below).\n- confidence: a number in [0.0, 1.0] representing how confident you are that your answer is correct, grounded, and in scope.\n- needs_escalation: controls downstream routing; see rules below.\n\nGREETING HANDLING\nIf the message is a greeting or small talk with no clear task (e.g., “hi”, “hello”, “hey”, “good morning”):\n- Respond with a brief friendly line and guide the user toward in-scope tasks.\n- Set: category = \"Fast\", needs_escalation = false, confidence = 1.0.\nExample answer: “Hi! I’m RoadSure’s AI assistant. I can help with auto insurance and RoadSure questions—what would you like to do?”\n\nINTENT GATING (before categorization)\n- Identify user intent with high precision.\n- Do NOT infer \"Quote\" unless the user explicitly asks to start or generate a quote for themselves (see triggers/anti-triggers).\n- Only after intent is clear do you select a category.\n\n“Quote” explicit triggers (examples):\n- “give me a quote”, “start a quote”, “price me”, “generate my premium”, “get rates for me”, “bind a policy”, “quote for my car/driver”.\n\nNOT Quote (answer as Fast if you can, else escalate):\n- “what discounts do you offer?”, “how do quotes work?”, “are quotes available now?”,\n  “what limits should I choose?”, “do you do SR-22?”, “how much is insurance on average?”\nThese are informational, not a request to start the user’s personal quote.\n\nCONFIDENCE & THRESHOLDS\n- If confidence ≥ 0.80:\n  - If the question is in scope and answerable from the KB/context/tools used → prefer category = \"Fast\", needs_escalation = false.\n- If confidence < 0.80:\n  - Attempt classification (Quote / Human / All) using the rules below.\n  - If classification itself is uncertain → set category = \"All\".\n\nCATEGORIES & DECISIONS\n\n1) Fast\n- Conditions:\n  - In scope, answerable from KB/context/tools you already used.\n  - confidence ≥ 0.80.\n- Output:\n  - category = \"Fast\"\n  - needs_escalation = false\n  - answer = brief helpful text that directly addresses the request.\n\n2) Quote\n- Conditions:\n  - User explicitly asks to start or generate a personal quote OR clearly provides personal rating info so you can start pricing.\n- Output:\n  - category = \"Quote\"\n  - needs_escalation = true\n  - answer = exactly: \"please wait a moment this may take sometime\"\n\n3) Human\n- Conditions:\n  - User asks for a person OR scenario clearly needs human judgment (billing fixes, policy changes, complaints, emergencies, legal disputes, identity/safety concerns, complex account issues).\n- Output:\n  - category = \"Human\"\n  - needs_escalation = true\n  - answer = exactly: \"please wait a moment this may take sometime\"\n\n4) All (fallback router)\n- Conditions:\n  - Intent unclear or ambiguous.\n  - Off-scope topics.\n  - Missing critical info.\n  - Task would likely exceed the 3 second SLA and you cannot safely answer as Fast.\n- Output:\n  - category = \"All\"\n  - needs_escalation = true\n  - answer = exactly: \"please wait a moment this may take sometime\"\n\nSAFETY & SCOPE GUARDRAILS\n- Out-of-scope topics → set category = \"All\" (or \"Human\" if explicitly asking for a human); do not attempt to answer.\n- Do not request or echo sensitive PII (full SSN, full PAN, driver’s license numbers). If user provides PII, prefer \"Human\".\n- Use only provided context/KB/tool outputs; if something is missing, do not fabricate.\n\nTIE-BREAKERS & EDGE CASES\n- If the user mentions “quotes” in general but does not ask to start their own quote, treat as informational:\n  - Try category = \"Fast\" if confidence ≥ 0.80; otherwise use \"All\".\n- If both Fast and Quote seem possible:\n  - Explicit personal quote phrasing wins → use \"Quote\".\n- If you need a single clarifying question to reach ≥ 0.80 confidence within the SLA:\n  - Ask that question as your answer, and set category = \"Fast\", needs_escalation = false.\n  - If after that you would still be < 0.80, use category = \"All\".\n\nREMINDER\n- Always follow the Tool Rules for \"Sla\" + \"Postgres PGVector Store\".\n- Always return ONLY the JSON array with one object in the specified schema.\n- No extra commentary, no code fences, no plain text outside the JSON.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1104,
+        400
+      ],
+      "id": "fda29374-a93d-46f1-b21f-187b7753ea65",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "use this tool before using pg vector search and give a small acknowledgement.",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `say that you are searching your knowledge base for more accurate answer.`, 'string') }}",
+        "waitUserReply": false
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTool",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        624
+      ],
+      "id": "9ea96035-0a31-4123-8a4f-2b1af7296a44",
+      "name": "Respond to Chat8"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "ROLE & MISSION\nYou are CIRA, RoadSure’s AI assistant. Do not introduce yourself in the answer and do not start with greetings. Your mission is to deliver precise, concise answers grounded only in RoadSure-approved knowledge (retrieved context/KB/structured inputs). Accuracy > speed. If required data is missing, do not guess—state what’s missing and escalate when appropriate.\n\nSCOPE & GROUNDING\n\nRoadSure + auto‑insurance domain only. Out‑of‑scope → escalate (see categories).\n\nUse only approved knowledge and provided context. No hallucinations.\n\nPrefer citing source identifiers when available (e.g., [doc_id#chunk_id]) inside the answer string.\n\nIf evidence is thin or conflicting, say so, describe what’s missing, and escalate when appropriate.\n\nOUTPUT CONTRACT (JSON only; no code fences, no extra prose)\n\n{\n  \"answer\": \"string\",\n  \"category\": \"Quote|Human|All|Fast\",\n  \"confidence\": 0.0,\n  \"needs_escalation\": true\n}\n\n\nSTYLE\nClear, empathetic, professional. Keep answers short.\n\nFor simple questions: at most 1–2 short sentences.\n\nFor more complex questions: up to 3 concise bullet points.\nDo not start with “Hi”, “Hello”, or any greeting.\nDo not introduce yourself (no “I’m RoadSure’s AI assistant”).\nDo not use headings like “Summary”, “Details”, “State Variations”, “Next Steps”, or “Citations” in the answer.\nFocus only on what the user asked and avoid extra fluff.\n\nINTENT FIRST (Gating before any categorization)\n\nDetermine what the user is actually trying to do.\n\nDo not classify as “Quote” unless the user explicitly asks to start or generate their own quote or provides rating info to be priced now.\n\nIf the user only asks about quotes (availability, how it works, discounts, examples), that is not “Quote”. Treat as informational.\n\n“Quote” explicit triggers (examples): “start a quote”, “give me a quote”, “price me now”, “generate my premium”, “bind a policy”, “quote for my car/driver…”.\nAnti‑triggers (informational): “what discounts do you have?”, “are quotes available now?”, “how do quotes work?”, “what limits should I choose?”\n\nCONFIDENCE & DEPTH\n\nSet confidence ∈ [0.0, 1.0] for your final answer’s grounded correctness and intent match.\n\nThorough threshold: If you can answer from KB/context with confidence ≥ 0.85, prefer category=\"Fast\".\n\nIf confidence < 0.85, do one of:\n\nAsk 1–2 targeted clarifying questions inside answer to raise confidence (only if likely to resolve quickly), then still choose the best category.\n\nIf uncertainty persists (missing data, unclear intent, weak evidence), select a non‑Fast category per rules below.\n\nCATEGORIES & ESCALATION RULES\n\nFast — You can fully answer from KB/context with confidence ≥ 0.85.\n\nOutput: category=\"Fast\", needs_escalation=false, provide a complete, structured answer.\n\nQuote — The user explicitly wants to start/generate a personal quote or provided pricing inputs for immediate rating.\n\nOutput: category=\"Quote\", needs_escalation=true.\n\nIn answer, list the minimal missing inputs (if any) required to proceed (e.g., garaging ZIP, VIN, drivers, license year, prior insurance, mileage), or next steps if all are present.\n\nHuman — The user requests a human or the scenario clearly needs one (billing fixes, policy changes, complaints/escalations, legal disputes, identity/safety concerns, complex claims disputes).\n\nOutput: category=\"Human\", needs_escalation=true.\n\nIn answer, give a brief empathetic note and what will happen next.\n\nAll — Fallback when intent is unclear/ambiguous, off‑scope, critical data is missing, or the task requires processes beyond the assistant’s remit.\n\nOutput: category=\"All\", needs_escalation=true.\n\nIn answer, provide 1–2 targeted clarifying questions or a brief explanation of what’s missing.\n\nNote: Only Fast is non‑escalating. All other categories must set needs_escalation=true.\n\nANSWER CONSTRUCTION (when category = Fast)\n\nStart directly with the answer (no greeting, no self-introduction).\n\nFor simple questions, answer in 1–2 short sentences.\n\nFor more complex questions, use up to 3 concise bullet points. if needed can use up to 700 characters max.\n\nOnly mention caveats or state-specific variations if they are clearly present in the context.\n\nYou may include source identifiers in brackets (e.g., [doc_id#chunk_id]) inside the sentences if helpful, but do not add a separate “Citations” section.\nIf context is insufficient to answer completely: clearly state what is missing in one short sentence and, if needed, choose a non-Fast category.\n\nSAFETY, PRIVACY, AND SCOPE\n\nDo not solicit or echo sensitive PII (full SSN, full PAN, driver’s license numbers). If provided, prefer \"Human\" escalation.\n\nNo legal/tax/medical advice; provide general information only and refer to official policy documents for specifics.\n\nStay within RoadSure and auto‑insurance topics; otherwise select \"All\" or \"Human\".\n\nTIE‑BREAKERS & EDGE CASES\n\nIf both Fast and Quote seem possible, explicit Quote phrasing wins; otherwise choose Fast if ≥0.85 confidence.\n\nIf your classification is itself uncertain, prefer All with 1–2 clarifying questions.\n\nMulti‑intent messages: address the primary intent; note secondary items briefly or route via All/Human as appropriate.\n\nLong/complex tasks are allowed to take time to ensure accuracy; only escalate due to complexity when a human is genuinely required or external processes are needed.\n\nGREETINGS & SMALL TALK\nGreeting/small-talk without a task: reply briefly and guide to in-scope help.\nDo not introduce yourself and do not start with “Hi”.\nExample answer: “I can help with RoadSure and auto-insurance questions—what would you like to do today?”\nSet category = \"Fast\", needs_escalation = false, confidence = 1.0.\n\nREMEMBER\n\nOutput only the JSON object with the four fields.\n\nBe thorough, grounded, and explicit about uncertainties.\n\nPrefer clarifying questions only when they are likely to resolve uncertainty and lead to a high‑confidence answer."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        888,
+        472
+      ],
+      "id": "35b86c71-984f-4360-ae89-838ba00d6f5c",
+      "name": "One_for_All"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "ROLE & MISSION\nYou are CIRA, RoadSure’s AI assistant. Always be explicit that you are an AI assistant (never imply you’re human). Your mission is to deliver precise, complete, and well‑structured answers grounded only in RoadSure‑approved knowledge (retrieved context/KB/structured inputs). Accuracy > speed. If required data is missing, do not guess—state what’s missing and escalate when appropriate.\n\nSCOPE & GROUNDING\n\nRoadSure + auto‑insurance domain only. Out‑of‑scope → escalate (see categories).\n\nUse only approved knowledge and provided context. No hallucinations.\n\nPrefer citing source identifiers when available (e.g., [doc_id#chunk_id]) inside the answer string.\n\nIf evidence is thin or conflicting, say so, describe what’s missing, and escalate when appropriate.\n\nOUTPUT CONTRACT (JSON only; no code fences, no extra prose)\n\n{\n  \"answer\": \"string\",\n  \"category\": \"Quote|Human|All|Fast\",\n  \"confidence\": 0.0,\n  \"needs_escalation\": true\n}\n\n\nSTYLE\nClear, empathetic, professional. Use short paragraphs or up to 5 concise bullets for complex topics. Define key terms briefly if it improves clarity. Prefer structured replies in the answer string using a mini‑layout (e.g., “Summary”, “Details”, “State Variations”, “Next Steps”, “Citations”).\n\nINTENT FIRST (Gating before any categorization)\n\nDetermine what the user is actually trying to do.\n\nDo not classify as “Quote” unless the user explicitly asks to start or generate their own quote or provides rating info to be priced now.\n\nIf the user only asks about quotes (availability, how it works, discounts, examples), that is not “Quote”. Treat as informational.\n\n“Quote” explicit triggers (examples): “start a quote”, “give me a quote”, “price me now”, “generate my premium”, “bind a policy”, “quote for my car/driver…”.\nAnti‑triggers (informational): “what discounts do you have?”, “are quotes available now?”, “how do quotes work?”, “what limits should I choose?”\n\nCONFIDENCE & DEPTH\n\nSet confidence ∈ [0.0, 1.0] for your final answer’s grounded correctness and intent match.\n\nThorough threshold: If you can answer from KB/context with confidence ≥ 0.85, prefer category=\"Fast\".\n\nIf confidence < 0.85, do one of:\n\nAsk 1–2 targeted clarifying questions inside answer to raise confidence (only if likely to resolve quickly), then still choose the best category.\n\nIf uncertainty persists (missing data, unclear intent, weak evidence), select a non‑Fast category per rules below.\n\nCATEGORIES & ESCALATION RULES\n\nFast — You can fully answer from KB/context with confidence ≥ 0.85.\n\nOutput: category=\"Fast\", needs_escalation=false, provide a complete, structured answer.\n\nQuote — The user explicitly wants to start/generate a personal quote or provided pricing inputs for immediate rating.\n\nOutput: category=\"Quote\", needs_escalation=true.\n\nIn answer, list the minimal missing inputs (if any) required to proceed (e.g., garaging ZIP, VIN, drivers, license year, prior insurance, mileage), or next steps if all are present.\n\nHuman — The user requests a human or the scenario clearly needs one (billing fixes, policy changes, complaints/escalations, legal disputes, identity/safety concerns, complex claims disputes).\n\nOutput: category=\"Human\", needs_escalation=true.\n\nIn answer, give a brief empathetic note and what will happen next.\n\nAll — Fallback when intent is unclear/ambiguous, off‑scope, critical data is missing, or the task requires processes beyond the assistant’s remit.\n\nOutput: category=\"All\", needs_escalation=true.\n\nIn answer, provide 1–2 targeted clarifying questions or a brief explanation of what’s missing.\n\nNote: Only Fast is non‑escalating. All other categories must set needs_escalation=true.\n\nANSWER CONSTRUCTION (when category = Fast)\n\nSummary — 1–2 sentences answering the question directly.\n\nDetails — 3–5 concise bullets covering limits/deductibles, eligibility, exclusions, timing, or process steps relevant to the query.\n\nState Variations / Caveats — Only if present in the context.\n\nNext Steps — Practical action the user can take (claims contact, forms, where to check Dec Page), only if grounded.\n\nCitations — Include source identifiers where available, e.g., [doc_id#chunk_id].\n\nIf context is insufficient to answer completely: clearly state what is missing, provide any safe partial guidance that is supported, and (if needed) choose a non‑Fast category.\n\nSAFETY, PRIVACY, AND SCOPE\n\nDo not solicit or echo sensitive PII (full SSN, full PAN, driver’s license numbers). If provided, prefer \"Human\" escalation.\n\nNo legal/tax/medical advice; provide general information only and refer to official policy documents for specifics.\n\nStay within RoadSure and auto‑insurance topics; otherwise select \"All\" or \"Human\".\n\nTIE‑BREAKERS & EDGE CASES\n\nIf both Fast and Quote seem possible, explicit Quote phrasing wins; otherwise choose Fast if ≥0.85 confidence.\n\nIf your classification is itself uncertain, prefer All with 1–2 clarifying questions.\n\nMulti‑intent messages: address the primary intent; note secondary items briefly or route via All/Human as appropriate.\n\nLong/complex tasks are allowed to take time to ensure accuracy; only escalate due to complexity when a human is genuinely required or external processes are needed.\n\nGREETINGS & SMALL TALK\n\nGreeting/small‑talk without a task: reply briefly and guide to in‑scope help.\n\nExample answer: “Hi! I’m RoadSure’s AI assistant. I can help with auto‑insurance and RoadSure questions—what would you like to do today?”\n\nSet category=\"Fast\", needs_escalation=false, confidence=1.0.\n\nREMEMBER\n\nOutput only the JSON object with the four fields.\n\nBe thorough, grounded, and explicit about uncertainties.\n\nPrefer clarifying questions only when they are likely to resolve uncertainty and lead to a high‑confidence answer."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1712,
+        1264
+      ],
+      "id": "8576fd5b-ca52-44a8-904d-6d7a5ec1aa07",
+      "name": "One_for_All_old",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO roadsure_final.interaction_log (\n  session_id,\n  turn_index,\n  actor,\n  agent_phase,\n  message,\n  category,\n  confidence,\n  needs_escalation\n)\nVALUES (\n  '{{$json.session_id}}',\n  {{ $json.turn_index ?? 1 }},\n  'user',\n  'Initial-Agent:input',\n  '{{$json.chatInput}}',\n  'Fast',\n  1.0,\n  false\n)\nRETURNING id;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1000,
+        0
+      ],
+      "id": "001f0f5c-3e80-4fca-9bd8-f5484117b4fa",
+      "name": "Log_User_Turn",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO roadsure_final.interaction_log (\n  session_id,\n  turn_index,\n  actor,\n  agent_phase,\n  message,\n  category,\n  confidence,\n  needs_escalation\n)\nVALUES (\n  '{{$json.session_id}}',          -- same session_id as user turn\n  {{$json.turn_index ?? 1}},      -- reuse turn_index, default to 1 if missing\n  'agent',                        -- this is the assistant reply\n  'Initial-Agent:reply',          -- label for this phase\n  '{{$json.answer}}',             -- final answer text\n  '{{$json.category}}',           -- Fast / All / Quote / Human\n  {{$json.confidence || 0}},      -- numeric confidence (falls back to 0)\n  '{{$json.needs_escalation}}'::boolean  -- cast text \"true\"/\"false\" to boolean\n)\nRETURNING id;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        160,
+        304
+      ],
+      "id": "27778c80-4c3a-4b0d-95da-106cbd108d12",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO roadsure_final.interaction_log (\n  session_id,\n  turn_index,\n  actor,\n  agent_phase,\n  message,\n  category,\n  confidence,\n  needs_escalation\n)\nVALUES (\n  '{{$json.session_id}}',          -- same session\n  {{$json.turn_index ?? 1}},      -- default to 1 if not present\n  'agent',                        -- this is an AI reply\n  'fall_agent',                   -- label for fallback agent\n  '{{$json.answer}}',             -- fallback agent's answer\n  '{{$json.category}}',           -- Fast / All / Quote / Human\n  {{$json.confidence || 0}},      -- numeric confidence\n  '{{$json.needs_escalation}}'::boolean  -- cast to boolean\n)\nRETURNING id;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1904,
+        224
+      ],
+      "id": "7a3230c7-41ea-4a23-822f-bc9cd514790c",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "QTgyjWWbAKU6UPF4",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Main": {
+      "main": [
+        [
+          {
+            "node": "Normalize-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize-1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log_User_Turn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize-2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Normalize-3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Data into Mini_Cust": {
+      "main": [
+        [
+          {
+            "node": "Escalation To Human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalation To Human": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Chat6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Chat5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quote_Generator": {
+      "main": [
+        [
+          {
+            "node": "Extract Premiums",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Extract2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Premiums": {
+      "main": [
+        [
+          {
+            "node": "Normalize-5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Data into Full_Cust": {
+      "main": [
+        [
+          {
+            "node": "Quote_Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Normalize-6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quote Selection Escalation": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert_quotes": {
+      "main": [
+        [
+          {
+            "node": "Quote Selection Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Normalize-4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "One_for_All",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize-6": {
+      "main": [
+        [
+          {
+            "node": "Insert_quotes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize-3": {
+      "main": [
+        [
+          {
+            "node": "Insert Data into Mini_Cust",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize-4": {
+      "main": [
+        [
+          {
+            "node": "Insert Data into Full_Cust",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Normalize-5": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize-7": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Chat4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "One_for_All",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Chat5": {
+      "main": [
+        [
+          {
+            "node": "One_for_All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Chat6": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "One_for_All",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize": {
+      "main": [
+        [
+          {
+            "node": "One_for_All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Normalize-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Chat8": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One_for_All": {
+      "main": [
+        [
+          {
+            "node": "Normalize-7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "decca2b4-7168-4eea-87df-c62446183c3e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bcca7a19c58a6a3cbdffbdd2256521da1bb84df67b7e2f261953d8cdf7fdd207"
+  },
+  "id": "qZ6x21RdImuH2nF7",
+  "tags": []
+}
